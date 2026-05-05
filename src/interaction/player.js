@@ -24,7 +24,7 @@ import ParentalControl from './parental_control'
 import Preroll from './advert/preroll'
 import Footer from './player/footer'
 import Segments from './player/segments'
-import VLC from '../core/vlc.js'
+import ExternalPlayer from '../core/externalPlayer.js'
 
 let html
 let listener = Subscribe()
@@ -898,21 +898,19 @@ function start(data, need, inner){
     }
     else if(Platform.desktop() && Storage.field(player_need) == 'other'){
         const path = Storage.field('player_nw_path')
-        const isVLC = path.toLowerCase().indexOf('vlc') !== -1
+        const supportedTypes = Object.values(ExternalPlayer.PLAYER_TYPES)
+        const detectedType = supportedTypes.find(type => path.toLowerCase().indexOf(type) !== -1)
 
         Preroll.show(data,()=>{
             const url = data.url.replace('&preload','&play')
-            if (isVLC) {
-                // Запускаем VLC с API интеграцией
-                const vlcOptions = {
-                    password: Storage.field('vlc_api_password'),
-                    fullscreen: Storage.field('vlc_fullscreen')
-                }
-                VLC.openPlayer(url, data, vlcOptions)
+            if (detectedType) {
+                ExternalPlayer.openPlayer(url, data, {
+                    type: detectedType,
+                    fullscreen: Storage.field('player_external_fullscreen')
+                })
             } else {
                 const file = require('fs')
                 if (file.existsSync(path)) {
-                    // Обычный запуск для других плееров
                     const spawn = require('child_process').spawn
                     spawn(path, [encodeURI(url)])
                 } else {
