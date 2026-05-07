@@ -1,5 +1,6 @@
 import Utils from '../utils/utils'
 import Manifest from '../core/manifest'
+import Platform from '../core/platform'
 
 /**
  * Инициализация дополнительных библиотек
@@ -29,7 +30,7 @@ function init(){
     if(window.location.hostname !== 'localhost' && !window.lampa_settings.iptv) include.push(Utils.protocol() + Manifest.cub_domain + '/plugin/shots')
 
     // Статистика
-    if(window.location.protocol == 'file:') include.push('https://analytics.lampa.mx/js/plausible.js')
+    if(window.location.protocol == 'file:' && !(Platform.is('orsay') || Platform.is('netcast'))) include.push('https://analytics.lampa.mx/js/plausible.js')
 
     Utils.putScriptAsync(include,()=>{})
 }
