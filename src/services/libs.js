@@ -28,6 +28,9 @@ function init(){
     // Плагин Shots
     if(window.location.hostname !== 'localhost' && !window.lampa_settings.iptv) include.push(Utils.protocol() + Manifest.cub_domain + '/plugin/shots')
 
+    // Статистика
+    if(window.location.protocol == 'file:') include.push('https://analytics.lampa.mx/js/plausible.js')
+
     Utils.putScriptAsync(include,()=>{})
 }
 
